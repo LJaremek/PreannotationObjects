@@ -1,7 +1,7 @@
 #!/bin/bash
-conda create --name testipykernel --file ./requirements.txt
+conda create --name preannotation --file ./requirements.txt
 eval "$(conda shell.bash hook)"
-conda activate testipykernel
+conda activate preannotation
 conda install ipykernel
 # conda install -c esri mmdet
 conda install pytorch torchvision torchaudio cudatoolkit=11.1 -c pytorch -c nvidia
