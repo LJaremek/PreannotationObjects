@@ -1,5 +1,6 @@
 # VS Code files
 .vscode/
+__pycache__/
 
 # Images
 coco/
