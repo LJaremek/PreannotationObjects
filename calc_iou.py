@@ -210,7 +210,7 @@ if __name__ == "__main__":
                     files_annotations[file_name],
                     new_annotations,
                     ("0 percentages", f"{percentage} percentages"),
-                    f"./images/iou/{file_name.split('.')[0]}_{percentage}"
+                    f"./iou/images/{file_name.split('.')[0]}_{percentage}"
                     )
 
             # draw_rectangles(
@@ -238,4 +238,4 @@ if __name__ == "__main__":
     plt.yticks([i/10 for i in range(0, 11)])
     plt.ylim(-0.05, 1.1)
     plt.title("Dependence of IoU on annotation offset percentage")
-    plt.savefig("./images/iou/iou_chart.png")
+    plt.savefig("./iou/images/iou_chart.png")
