@@ -1,11 +1,12 @@
 from fastapi.exceptions import HTTPException
+from fastapi.responses import JSONResponse
 from fastapi import FastAPI, UploadFile
 import numpy as np
 import uvicorn
 
 # from mmdet.models.detectors.single_stage import SingleStageDetector
 from mmdet.apis import init_detector, inference_detector
-from mmcv import imread
+from mmcv import imfrombytes
 
 ALLOWED_IMAGE_TYPES = ("image/jpeg", "image/png")
 
@@ -17,7 +18,7 @@ def get_annotations(
         file: UploadFile,
         config_file: str,
         checkpoint_file: str
-        ) -> None:
+        ) -> JSONResponse:
 
     print(file.filename)
     print(file.content_type)
@@ -31,14 +32,15 @@ def get_annotations(
 
     file_as_bytes = file.file.read()
 
-    ndarray = np.frombuffer(file_as_bytes, dtype=np.uint8)
-    image = imread(ndarray)
+    image = imfrombytes(file_as_bytes)
 
     model = init_detector(config_file, checkpoint_file, device="cpu")
 
-    # results = inference_detector(model, image)
+    results: list[np.array] = inference_detector(model, image)
 
-    # print(results)
+    results_as_list = [arr.tolist() for arr in results]
+
+    return JSONResponse(content={"detections": results_as_list})
 
 
 if __name__ == "__main__":
