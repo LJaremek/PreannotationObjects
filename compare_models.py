@@ -1,3 +1,4 @@
+from time import time
 import json
 
 from mmdet.apis import init_detector
@@ -21,9 +22,13 @@ if __name__ == "__main__":
         checkpoint_file = f"./models/{model_files['checkpoint_file']}"
         config_file = f"./models/{model_files['config_file']}"
 
+        start_time = time()
         model = init_detector(config_file, checkpoint_file, device="cpu")
+        model_init_time = time() - start_time
 
         model_ji: list[float] = []
+        start_time = time()
+        incorrect_images = 0
         for file_name in files:
 
             file_path = f"./coco/images/{file_name}"
@@ -34,9 +39,16 @@ if __name__ == "__main__":
             _, _, _, ji_avg = filter_rectangles(
                 coco_rects, mmdet_rects, MIN_JI_INDEX
             )
+            if ji_avg == 0:
+                incorrect_images += 1
 
             model_ji.append(ji_avg)
+        labeling_data_time = time() - start_time
 
-        print("!!!!!")
-        print(model_name, sum(model_ji)/len(model_ji))
-        print("!!!!!")
+        print(">>>>> MODEL STATS")
+        print("model name:", model_name)
+        print("model ji:", sum(model_ji)/len(model_ji))
+        print("model load time:", model_init_time)
+        print("model label time:", labeling_data_time)
+        print("bad:", incorrect_images)
+        print("<<<<<")

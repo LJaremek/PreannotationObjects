@@ -1,7 +1,10 @@
 ## Table of contents
 - [Available models](#available-models)
-- [How to download a model](#download-models)
-- [Models used in the experiment](#used-models)
+- [How to download a model](#how-to-download-a-model)
+- [Models used in the experiment](#models-used-in-the-experiment)
+- [Experiment](#experiment)
+    - [Experiment results](#experiment-results)
+- [Recreating the experiment](#recreating-the-experiment)
 
 
 ## Available models
@@ -26,4 +29,35 @@ mim download mmdet --config yolov3_mobilenetv2_320_300e_coco --dest ./models/
 ```
 
 
-## 
+## Experiment
+I compared three models which are available on CPU (I assume that the person who wants to pre-label the data does not have a graphics card. He probably has a simple laptop). The models are:
+ - ssd - [Single Shot MultiBox Detector](https://arxiv.org/abs/1512.02325)
+ - yolov3 - [You Only Look Once](https://arxiv.org/abs/1804.02767) 
+ - yolox - [You Only Look Once X](https://arxiv.org/abs/2107.08430)
+
+</br>
+
+I examined the following elements of the models:
+- model loading time
+- model labeling time (every model has the same data set)
+- model avg Jaccard index
+- Images without correct detections
+
+</br>
+
+### Experiment results
+| Name | AVG JI | Size [mb] | Loading time [s] | Labeling time [s] | Without detections |
+| :---: | ---: | ---: | ---: | ---: | ---: |
+| yolov3 | 0.43 | 17 | 0.15 | 30.25 | 246 |
+| ssdlite | 0.47 | 15 | 0.16 | 42.50 | 230 |
+| yolox | 0.60 | 20 | 0.20 | 49.20 | 158 |
+
+As you can see, yolox is the _largest_ model, but it has the best Jaccard index value and the smallest number of images without correct detections - so we can choose the model for production.
+
+
+## Recreating the experiment
+If you want to reconstruct the experiment, you can run this command:
+```shell
+python ./compare_models.py
+```
+Please note that experiment results may vary slightly due to processor power or random elements in the models.

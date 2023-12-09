@@ -1,14 +1,14 @@
 {
     "ssdlite": {
-        "checkopoint_file": "ssdlite_mobilenetv2_scratch_600e_coco_20210629_110627-974d9307.pth",
+        "checkpoint_file": "ssdlite_mobilenetv2_scratch_600e_coco_20210629_110627-974d9307.pth",
         "config_file": "ssdlite_mobilenetv2_scratch_600e_coco.py"
     },
     "yolov3": {
-        "checkopoint_file": "yolov3_mobilenetv2_320_300e_coco_20210719_215349-d18dff72.pth",
-        "config_file": "yolov3_mobilenetv2_320_300e_coco_20210719_215349-d18dff72.pth"
+        "checkpoint_file": "yolov3_mobilenetv2_320_300e_coco_20210719_215349-d18dff72.pth",
+        "config_file": "yolov3_mobilenetv2_320_300e_coco.py"
     },
     "yolox": {
-        "checkopoint_file": "yolox_tiny_8x8_300e_coco_20211124_171234-b4047906.pth",
+        "checkpoint_file": "yolox_tiny_8x8_300e_coco_20211124_171234-b4047906.pth",
         "config_file": "yolox_tiny_8x8_300e_coco.py"
     }
 }
