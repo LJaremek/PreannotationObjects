@@ -4,3 +4,8 @@ __pycache__/
 
 # Images
 coco/
+
+# Models
+models/*
+!models/README.md
+!models/experiment_models.json

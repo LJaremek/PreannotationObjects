@@ -1,9 +1,9 @@
+from enum import Enum
 import json
 
 json_path: str = "./coco/panoptic_val2017.json"
 with open(json_path) as file:
-    json_annotations = json.loads("".join(file.readlines()))
-
+    json_annotations: dict = json.loads("".join(file.readlines()))
 
 ALL: list = [
     category["id"]
@@ -20,3 +20,8 @@ CATEGORIES: dict = {
     category["id"]: category["name"]
     for category in json_annotations["categories"]
     }
+
+
+class Categories(Enum):
+    ALL = ALL
+    VEHICLES = VEHICLES
