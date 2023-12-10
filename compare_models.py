@@ -3,10 +3,10 @@ import json
 
 from mmdet.apis import init_detector
 
-from constans import Categories, json_annotations
-from tools import get_coco_rects, get_mmdet_rects
-from tools import get_files_annotations
-from tools import filter_rectangles
+from tools.rectangles import get_coco_rects, get_mmdet_rects
+from tools.constans import Categories, json_annotations
+from tools.annotations import get_files_annotations
+from tools.rectangles import filter_rectangles
 
 
 MODELS_JSON = "./models/experiment_models.json"
