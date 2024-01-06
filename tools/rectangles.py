@@ -94,7 +94,8 @@ def add_mmdet_rects_to_plt(mmdet_rects: list) -> None:
 def draw_rectangles(
         file_path: str,
         coco_rects: list,
-        mmdet_rects: list
+        mmdet_rects: list,
+        image_name: str = None
         ) -> None:
 
     img = Image.open(file_path)
@@ -104,6 +105,8 @@ def draw_rectangles(
     add_mmdet_rects_to_plt(mmdet_rects)
 
     plt.show()
+    if image_name is not None:
+        plt.savefig(image_name)
 
 
 def filter_rectangles(
