@@ -3,6 +3,7 @@ Pre annotation of objects project.
 
 ### Repository content:
 * [IoU informations](./iou/README.md)
+* [Comparing models](./models/README.md)
 
 </br>
 
