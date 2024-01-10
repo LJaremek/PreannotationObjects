@@ -32,14 +32,14 @@ Data in Label-Studio are stored in folder
 /home/<USER>/.local/share/label-studio/media/upload/<PROJECT_ID>
 ```
 
-To start local file hosting you can run a api_server.py by:
+To start local file hosting you can run a aserver.py by:
 ```
-python api_server.py
+python server.py
 ```
 
 And then, the files located in the UPLOAD_FOLDER (const variable in the file) could be hosted, for example:
 ```Python
-# api_server.py
+# server.py
 ...
 UPLOAD_FOLDER = Path("/home/user/my_images")
 ...
