@@ -85,6 +85,24 @@ def parse_model_results(
     return annotations
 
 
+def prepare_label_config(model_classes: list[str]) -> str:
+    class_records = ""
+    for the_class in model_classes:
+        new_line = f"""\n<Label value="{the_class}" """
+        new_line += f"""background="#{rand_hex_color()}"/>"""
+
+        class_records += new_line
+
+    return f"""
+        <View>
+            <Image name="image" value="$image"/>
+            <RectangleLabels name="label" toName="image">
+                {class_records}
+            </RectangleLabels>
+        </View>
+        """
+
+
 @app.post("/get_annotations_from_file")
 def get_annotations_from_file(
         file: UploadFile,
@@ -245,24 +263,23 @@ def create_ls_project(
         project_title: str = "My New Project",
         project_description: str = None
         ) -> JSONResponse:
+    """
+    Endpoint create a new project in Label Studio with the given title and desc
+    This endpoint set label config (label names and colors) based on the model.
+
+    Input:
+     * config_file: str - model config file .py
+     * checkpoint_file: str - model checkpoint file .pth
+     * project_title: str - project title
+     * project_description: str - project description
+
+    Output:
+     * json_content: str - json content with status code and response text
+    """
 
     model = init_detector(config_file, checkpoint_file, device="cpu")
 
-    class_records = ""
-    for the_class in model.CLASSES:
-        new_line = f"""\n<Label value="{the_class}" """
-        new_line += f"""background="#{rand_hex_color()}"/>"""
-
-        class_records += new_line
-
-    label_config = f"""
-        <View>
-            <Image name="image" value="$image"/>
-            <RectangleLabels name="label" toName="image">
-                {class_records}
-            </RectangleLabels>
-        </View>
-        """
+    label_config = prepare_label_config(model.CLASSES)
 
     task_data = {}
     task_data["label_config"] = label_config
@@ -273,6 +290,49 @@ def create_ls_project(
 
     response = requests.post(
         "http://localhost:8080/api/projects/",
+        headers={"Authorization": f"Token {TOKEN}"},
+        json=task_data,
+        verify=False
+    )
+
+    return JSONResponse(
+        content=json.dumps(
+            {
+                "text": response.text,
+                "status_code": response.status_code
+            }
+            )
+        )
+
+
+@app.post("/update_ls_project")
+def update_ls_project(
+        config_file: str,
+        checkpoint_file: str,
+        project_id: int
+        ) -> JSONResponse:
+    """
+    Endpoint update the project in Label Studio with the given project id.
+    This endpoint set label config (label names and colors) based on the model.
+
+    Input:
+     * config_file: str - model config file .py
+     * checkpoint_file: str - model checkpoint file .pth
+     * project_id: int - project id
+
+    Output:
+     * json_content: str - json content with status code and response text
+    """
+
+    model = init_detector(config_file, checkpoint_file, device="cpu")
+
+    label_config = prepare_label_config(model.CLASSES)
+
+    task_data = {}
+    task_data["label_config"] = label_config
+
+    response = requests.patch(
+        f"http://localhost:8080/api/projects/{project_id}",
         headers={"Authorization": f"Token {TOKEN}"},
         json=task_data,
         verify=False
