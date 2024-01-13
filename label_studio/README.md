@@ -15,6 +15,7 @@ Please open the file `/home/<user>/.bashrc` and at the end of the file add lines
 ...
 
 # Label Studio config
+export LABEL_STUDIO_TOKEN=<your label studio token>
 export LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
 export LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=<local storage path>
 ```
@@ -24,20 +25,39 @@ Then restart the system.
 More in documentation: https://labelstud.io/guide/start.html#Command-line-arguments-for-starting-Label-Studio
 
 
-### 2. Create json file
-You have to create a json file with images which you want to upload to Label Studio. Remember, that you can generate pre-annotations with the app!
-
-You can use a `label_studio/server.py` with the endpoint `prepare_ls_json` to generate files json with annotations.
-
-
-#### 2.1. Starting server
+### 2. Starting server
 Run server by the command:
 ```bash
 python label_studio/server.py
 ```
 
-Use `prepare_ls_json` endpoint. You can check example calling in `label_studio/call_prepare_ls_json.py`
 
-After call `call_prepare_ls_json`, you will see `files_with_annotations.json` file which you can upload to Label Studio project.
+#### 3. Create or update project
+If you want to use generated pre-annotations, your project in Label Studio has to have be set correctly.
+With the given endpoints, you can create a new project (`create_ls_project` endpoint) or update your existing project (`update_ls_project` endpoint).
 
-Remember, that you have to specify label names in project settings in "Label Interface" page.
+You can use examples:
+```bash
+python label_studio/call_create_ls_project.py
+```
+
+or
+
+```bash
+python label_studio/call_update_ls_project.py
+```
+
+
+### 4. Generate json file
+
+You have to create a json file with images which you want to upload to Label Studio. Remember, that you can generate pre-annotations with the app!
+
+You can use a `label_studio/server.py` with the endpoint `prepare_ls_json` to generate files json with annotations.
+
+
+Use `prepare_ls_json` endpoint. You can check the sample call in
+```bash
+python label_studio/call_prepare_ls_json.py`
+```
+
+After call `call_prepare_ls_json`, you will see `files_with_annotations.json` file in label_studio folder, which you can upload to Label Studio project.
