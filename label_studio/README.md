@@ -1,6 +1,6 @@
 # Configure Label Studio
 
-### 1. System environmnt variables
+### 1. System environment variables
 If you want to run Label Studio with local files hosting, you have to set two environment variables.
 
 The first one make possible to use local storage.

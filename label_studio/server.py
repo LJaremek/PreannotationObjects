@@ -1,3 +1,5 @@
+from random import randint
+import requests
 import json
 import os
 
@@ -14,10 +16,16 @@ from mmdet.apis import init_detector, inference_detector
 from mmcv import imfrombytes
 
 LOCAL_SERVER_PATH = os.getenv("LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT")
+TOKEN = os.getenv("LABEL_STUDIO_TOKEN")
+
 ALLOWED_IMAGE_TYPES = ("image/jpeg", "image/png")
 ALLOWED_IMAGES_EXTS = ("png", "jpg", "jpeg")
 
 app = FastAPI()
+
+
+def rand_hex_color() -> str:
+    return "".join([f"{hex(randint(1, 255)):04}"[2:] for _ in range(3)])
 
 
 def parse_model_results(
@@ -227,6 +235,56 @@ def prepare_ls_json(
 
     return JSONResponse(
         content=json.dumps(label_studio_json).replace("'", '"')
+        )
+
+
+@app.post("/create_ls_project")
+def create_ls_project(
+        config_file: str,
+        checkpoint_file: str,
+        project_title: str = "My New Project",
+        project_description: str = None
+        ) -> JSONResponse:
+
+    model = init_detector(config_file, checkpoint_file, device="cpu")
+
+    class_records = ""
+    for the_class in model.CLASSES:
+        new_line = f"""\n<Label value="{the_class}" """
+        new_line += f"""background="#{rand_hex_color()}"/>"""
+
+        class_records += new_line
+
+    label_config = f"""
+        <View>
+            <Image name="image" value="$image"/>
+            <RectangleLabels name="label" toName="image">
+                {class_records}
+            </RectangleLabels>
+        </View>
+        """
+
+    task_data = {}
+    task_data["label_config"] = label_config
+    task_data["title"] = project_title
+
+    if project_description is not None:
+        task_data["description"] = project_description
+
+    response = requests.post(
+        "http://localhost:8080/api/projects/",
+        headers={"Authorization": f"Token {TOKEN}"},
+        json=task_data,
+        verify=False
+    )
+
+    return JSONResponse(
+        content=json.dumps(
+            {
+                "text": response.text,
+                "status_code": response.status_code
+            }
+            )
         )
 
 

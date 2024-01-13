@@ -1,5 +1,4 @@
 import requests
-import json
 
 
 data = {
@@ -9,28 +8,20 @@ data = {
     "checkpoint_file":
     "models/yolov3_mobilenetv2_320_300e_coco_20210719_215349-d18dff72.pth",
 
-    "data_folder": "test_images"
+    "project_description": "This is test call project"
     }
 
 
-def call_prepare_ls_json() -> None:
-    url = "http://localhost:8000/prepare_ls_json/"
+def call_create_ls_project() -> None:
+    url = "http://localhost:8000/create_ls_project/"
 
     response = requests.post(url, params=data)
 
     if response.status_code != 200:
         raise Exception(f"Network Error with code: {response.status_code}")
 
-    response_dict = json.loads(response.text)
-
-    with open(
-            "label_studio/files_with_annotations.json",
-            "w",
-            -1,
-            "utf-8"
-            ) as file:
-        print(response_dict, file=file)
+    print("Status code:", response.status_code)
 
 
 if __name__ == "__main__":
-    call_prepare_ls_json()
+    call_create_ls_project()
