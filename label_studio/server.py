@@ -1,10 +1,11 @@
+import json
 import os
 
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.responses import FileResponse
 from fastapi import FastAPI, UploadFile
-from pathlib import Path
+from PIL import Image
 import numpy as np
 import uvicorn
 
@@ -12,35 +13,68 @@ from mmdet.models.detectors.single_stage import SingleStageDetector
 from mmdet.apis import init_detector, inference_detector
 from mmcv import imfrombytes
 
+LOCAL_SERVER_PATH = os.getenv("LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT")
 ALLOWED_IMAGE_TYPES = ("image/jpeg", "image/png")
-UPLOAD_FOLDER = Path("/home/nolok/PreannotationObjects/coco/images")
+ALLOWED_IMAGES_EXTS = ("png", "jpg", "jpeg")
 
 app = FastAPI()
 
 
 def parse_model_results(
         model: SingleStageDetector,
-        model_results: list[list[tuple[float, float, float, float]]]
+        model_results: list[np.array],
+        image_width: int,
+        image_height: int,
+        min_model_score: float = 0.3
         ) -> dict[str, list[tuple[float, float, float, float]]]:
     """
-    Function parse the model results.
+    Function parse the model results for the Label Studio.
 
     Input:
      * model: SingleStageDetector
-     * model_results: list[list[tuple[float, float, float, float]]] - list with
-        lists of detections for the class.
+     * model_results: list[np.array] - list with model detections
+     * image_width: int - image width
+     * image_height: int - image height
+     * min_model_score: float [default 0.3] - min model score for annotations
 
     Output:
-     * response: dict - key is a class, value is bbox list
+     * annotations: dict - prepared model annotations for Label Studio
     """
 
-    content: dict[str, list[tuple[float, float, float, float]]] = {}
+    annotations = [
+        {
+            "result": []
+        }
+    ]
+
+    model_results = [arr.tolist() for arr in model_results]
 
     for index, class_name in enumerate(model.CLASSES):
         detections = model_results[index]
-        content[class_name] = detections
 
-    return content
+        for detection in detections:
+            x1, y1, x2, y2, score = detection
+
+            if score < min_model_score:
+                continue
+
+            result_record = {
+                "value": {
+                    "x": x1*100/image_width,
+                    "y": y1*100/image_height,
+                    "width": (x2-x1)*100/image_width,
+                    "height": (y2-y1)*100/image_height,
+                    "rectanglelabels": [
+                        class_name
+                    ]
+                },
+                "from_name": "label",
+                "to_name": "image",
+                "type": "rectanglelabels"
+            }
+            annotations[0]["result"].append(result_record)
+
+    return annotations
 
 
 @app.post("/get_annotations_from_file")
@@ -92,20 +126,11 @@ def get_annotations_from_file(
 
 @app.get("/file_url")
 async def file_url(file_path: str) -> FileResponse:
+    """
+    Endpoint for generating URL for the file with the given path.
+    """
     print(file_path)
     return FileResponse(file_path)
-
-
-@app.get("/image_to_url/{filename}")
-async def image_to_url(filename: str) -> FileResponse:
-    """
-    Hosting image on URL.
-    Input:
-     * filename: str - name of the file in path 'UPLOAD_FOLDER'
-    """
-    path = f"{UPLOAD_FOLDER}/{filename}"
-
-    return FileResponse(path)
 
 
 @app.post("/get_folder_annotations")
@@ -150,6 +175,59 @@ def get_folder_annotations(
         content[file] = parse_model_results(model, results_as_list)
 
     return JSONResponse(content=content)
+
+
+@app.post("/prepare_ls_json")
+def prepare_ls_json(
+        data_folder: str,
+        config_file: str,
+        checkpoint_file: str
+        ) -> JSONResponse:
+    """
+    Endpoint prepare json file content for the Label Studi with the images from
+    the given server.
+
+    Input:
+     * data_folder: str - data folder name.
+        It has to be in local server storage!
+     * config_file: str - model config file .py
+     * checkpoint_file: str - model checkpoint file .pth
+
+    Output:
+     * json_content: str - json content for Label Studio.
+    """
+
+    files = os.listdir(LOCAL_SERVER_PATH + "/" + data_folder)
+
+    model = init_detector(config_file, checkpoint_file, device="cpu")
+
+    label_studio_json = []
+    for file in files:
+        if file.split(".")[-1] not in ALLOWED_IMAGES_EXTS:
+            continue
+
+        file_path = LOCAL_SERVER_PATH + "/" + data_folder + "/" + file
+
+        width, height = Image.open(file_path).size
+
+        model_results: list[np.array] = inference_detector(model, file_path)
+        annotations = parse_model_results(
+            model, model_results, width, height
+            )
+
+        label_studio_json.append(
+            {
+                "data": {
+                    "image": f"/data/local-files?d={data_folder}/{file}"
+                },
+                "annotations": annotations,
+                "predictions": []
+            }
+        )
+
+    return JSONResponse(
+        content=json.dumps(label_studio_json).replace("'", '"')
+        )
 
 
 if __name__ == "__main__":
