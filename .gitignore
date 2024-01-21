@@ -9,3 +9,6 @@ coco/
 models/*
 !models/README.md
 !models/experiment_models.json
+
+# Label Studio
+label_studio/files_with_annotations.json
