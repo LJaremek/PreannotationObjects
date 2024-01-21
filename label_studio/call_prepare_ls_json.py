@@ -23,13 +23,16 @@ def call_prepare_ls_json() -> None:
 
     response_dict = json.loads(response.text)
 
+    result_json_path = "label_studio/files_with_annotations.json"
+
     with open(
-            "label_studio/files_with_annotations.json",
+            result_json_path,
             "w",
             -1,
             "utf-8"
             ) as file:
         print(response_dict, file=file)
+        print("File location:", result_json_path)
 
 
 if __name__ == "__main__":
