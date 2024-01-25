@@ -53,9 +53,6 @@ def get_mmdet_rects(
 def get_coco_rects(
         file_segments: list[list[int, int, int, int]]
         ) -> list[list[int, int, int, int]]:
-    """
-    TODO: Do we need the function? For code readability?
-    """
 
     rects: list = []
 

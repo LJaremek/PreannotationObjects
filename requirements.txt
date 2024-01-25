@@ -20,6 +20,7 @@ openssl=1.1.1t=h7f8727e_0
 pip=22.3.1=py310h06a4308_0
 pycodestyle=2.10.0=py310h06a4308_0
 pyflakes=3.0.1=py310h06a4308_0
+pytest=7.4.0=py310h06a4308_0
 python=3.10.9=h7a1cb2a_0
 python-multipart=0.0.6=py310h06a4308_0
 readline=8.2=h5eee18b_0
