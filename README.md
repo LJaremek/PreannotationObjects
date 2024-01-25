@@ -9,7 +9,36 @@ Pre annotation of objects project.
 
 </br>
 
-### 2. Getting started
+### 2. Files structure
+```
+.
+├── coco                        <-- images for models experiments
+│   ├── annotations
+│   ├── images
+│   ├── iou
+│   └── panoptic_val2017.json
+├── iou                         <-- data for IoU experiments
+│   ├── images
+│   └── README.md
+├── label_studio                <-- microservis with example using
+│   ├── test_images
+│   ├── README.md
+│   ├── call_*.py
+│   └── server.py
+├── models                      <-- models config and checkpoints files
+│   ├── README.md
+│   └── experiment_models.json
+├── tests                       <-- unit tests
+│   ├── README.md
+│   └── test_*.py
+├── tools                       <-- math and auxiliary functions
+├── README.md
+├── env.sh                      <-- preparing conda virtual environment
+└── requirements.txt
+```
+
+
+### 3. Getting started
 Clone this repo to your computer:
 ```shell
 git clone https://github.com/LJaremek/PreannotationObjects.git
@@ -29,11 +58,16 @@ conda activate preannotation
 
 </br>
 
-### 3. Upload file to Label-Studio
+### 4. Upload file to Label-Studio
 The complete instruction is in [Label Studio folder README](./label_studio/README.md).
 
 
-#### Short demo:
+### 5. Images with annotations
+For reproducing experiments you can download the `coco` folder to root project folder from:
+https://drive.google.com/drive/folders/1JNP46nw0OVIX_uzomTteNaHThS8vcb_t?usp=sharing
+
+
+### 6. Short demo:
 To run local server with endpoints:
 ```bash
 python server.py
@@ -49,8 +83,3 @@ And then preapre json file for Label Studio project:
 ```bash
 python label_studio/call_prepare_ls_json.py
 ```
-
-
-### 4. Images with annotations
-For reproducing experiments you can download the `coco` folder to root project folder from:
-https://drive.google.com/drive/folders/1JNP46nw0OVIX_uzomTteNaHThS8vcb_t?usp=sharing
