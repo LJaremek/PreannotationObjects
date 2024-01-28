@@ -72,6 +72,19 @@ def test_filter_rectangles_3() -> None:
     assert filter_rectangles(rects1, rects2, 0.3) == results
 
 
+def test_filter_rectangles_4() -> None:
+    rects1 = [
+        (0, 0, 50, 50),
+        (0, 0, 50, 25)
+    ]
+    rects2 = [
+        (100, 100, 25, 25),
+        (200, 200, 10, 10)
+    ]
+
+    assert filter_rectangles(rects1, rects2, 0.3) == ([], [], 0, 0)
+
+
 def test_move_rect_by_percentage_1() -> None:
     seed(1104)
     result = (60.0, 60.0, 100, 100)
