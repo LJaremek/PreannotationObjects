@@ -348,6 +348,87 @@ def update_ls_project(
         )
 
 
+@app.post("/import_image_to_ls")
+def import_image_to_ls(
+        project_id: int,
+        image_path: str
+        ) -> str:
+    """
+    """
+    url = "http://localhost:8080/api/tasks/"
+
+    headers = {"Authorization": f"Token {TOKEN}"}
+
+    task_data = {
+        "project": project_id,
+        "is_labeled": True,
+        "data": {
+            "image": image_path
+        }
+    }
+
+    response = requests.post(
+            url,
+            headers=headers,
+            json=task_data,
+            verify=False
+        )
+
+    task_id = None
+    if response.status_code == 201:
+        task_id = json.loads(response.text)["id"]
+
+    return JSONResponse(
+        content={
+                "text": response.text,
+                "status_code": response.status_code,
+                "task_id": task_id
+            }
+        )
+
+
+@app.post("/import_annotations_to_image")
+def import_annotations_to_image(
+        project_id: int,
+        image_id: int,
+        annotations: str
+        ) -> JSONResponse:
+    """
+    Input:
+     * project_id: int - id of the project, where we want to add annotations
+     * image_id: int - id of the image, where we want to add annotations
+     * annotations: str - encoded to string the dict with key 'annotations' and
+        value are annotations as a list.
+    """
+    annotations = json.loads(annotations)["annotations"]
+    task_id = image_id
+    url = f"http://localhost:8080/api/tasks/{task_id}/annotations/"
+
+    headers = {"Authorization": f"Token {TOKEN}"}
+
+    annotation_data = {
+            "id": task_id,
+            "project": project_id,
+            "result": annotations
+        }
+
+    response = requests.post(
+        url,
+        headers=headers,
+        json=annotation_data,
+        verify=False
+    )
+
+    return JSONResponse(
+        content=json.dumps(
+            {
+                "text": response.text,
+                "status_code": response.status_code
+            }
+            )
+        )
+
+
 if __name__ == "__main__":
     uvicorn.run(
         app, host="0.0.0.0",

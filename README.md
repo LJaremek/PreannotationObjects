@@ -73,7 +73,6 @@ To run local server with endpoints:
 python server.py
 ```
 
-
 You can create Label Studio project by execute example file:
 ```bash
 python label_studio/call_create_ls_project.py
@@ -83,3 +82,13 @@ And then preapre json file for Label Studio project:
 ```bash
 python label_studio/call_prepare_ls_json.py
 ```
+
+When you have ready json file, you can import it (images with annotations) to Label Studio by:
+```bash
+python label_studio/call_import_images_with_annotations.py
+```
+
+</br>
+</br>
+
+And that is it. You have built a pipeline that creates a Label Studio project, annotates the photos folder, and import the annotated photos into Label Studio. Well done!
