@@ -348,6 +348,45 @@ def update_ls_project(
         )
 
 
+@app.post("/import_image_to_ls")
+def import_image_to_ls(
+        project_id: int,
+        image_path: str
+        ) -> str:
+    """
+    """
+    url = "http://localhost:8080/api/tasks/"
+
+    headers = {"Authorization": f"Token {TOKEN}"}
+
+    task_data = {
+        "project": project_id,
+        "is_labeled": True,
+        "data": {
+            "image": image_path
+        }
+    }
+
+    response = requests.post(
+            url,
+            headers=headers,
+            json=task_data,
+            verify=False
+        )
+
+    task_id = None
+    if response.status_code == 201:
+        task_id = json.loads(response.text)["id"]
+
+    return JSONResponse(
+        content={
+                "text": response.text,
+                "status_code": response.status_code,
+                "task_id": task_id
+            }
+        )
+
+
 if __name__ == "__main__":
     uvicorn.run(
         app, host="0.0.0.0",
