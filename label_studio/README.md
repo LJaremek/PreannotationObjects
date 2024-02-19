@@ -61,3 +61,16 @@ python label_studio/call_prepare_ls_json.py`
 ```
 
 After call `call_prepare_ls_json`, you will see `files_with_annotations.json` file in label_studio folder, which you can upload to Label Studio project.
+
+
+### 5. Upload json file to Label Studio
+
+When you have a file with prepared pre annotations, you can upload it to the Label Studio. Then, your work will be done.
+
+You can do it using the methods `import_image_to_ls` and `import_annotations_to_image`.
+
+If you want to check if you can implement the methods, please check the file `label_studio/call_import_images_with_annotations.py`. You can run it by typing:
+```bash
+python label_studio/call_import_images_with_annotations.py
+```
+The file is using the existing `files_with_annotations.json` file.
